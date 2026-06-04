@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Days Since Our Last Salad</title>
+  <meta name="description" content="A workplace-safety-sign style tracker counting the days since someone last ate a salad." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="board">
+    <!-- The safety sign -->
+    <section class="sign" aria-labelledby="sign-title">
+      <div class="hazard-strip" aria-hidden="true"></div>
+
+      <header class="sign__header">
+        <p class="sign__eyebrow">🥗 Salad Safety Board</p>
+        <h1 id="sign-title" class="sign__title">This Office Has Gone</h1>
+      </header>
+
+      <div class="counter" id="counter" role="status" aria-live="polite">
+        <div class="counter__display" id="counter-days">--</div>
+        <div class="counter__label" id="counter-unit">DAYS</div>
+        <div class="counter__live" id="counter-live">since our last salad</div>
+      </div>
+
+      <p class="sign__subtitle" id="sign-subtitle">without a salad-related incident</p>
+
+      <div class="hazard-strip" aria-hidden="true"></div>
+    </section>
+
+    <!-- Stats row -->
+    <section class="stats" id="stats" aria-label="Salad statistics">
+      <div class="stat">
+        <span class="stat__value" id="stat-record">--</span>
+        <span class="stat__label">Record streak</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value" id="stat-total">--</span>
+        <span class="stat__label">Salads on record</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value" id="stat-offender">--</span>
+        <span class="stat__label">Last offender</span>
+      </div>
+    </section>
+
+    <!-- Report-a-salad form -->
+    <section class="report" aria-labelledby="report-title">
+      <h2 id="report-title" class="report__title">Report a salad &amp; reset the counter</h2>
+      <form id="salad-form" class="report__form" autocomplete="off">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" maxlength="60"
+                 placeholder="e.g. Dana" required />
+        </div>
+        <div class="field">
+          <label for="salad">The salad you ate</label>
+          <input id="salad" name="salad" type="text" maxlength="120"
+                 placeholder="e.g. Caesar with extra croutons" required />
+        </div>
+        <button type="submit" class="report__button" id="submit-button">
+          I ate a salad 🥗 — reset the counter
+        </button>
+        <p class="report__error" id="form-error" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline" aria-labelledby="timeline-title">
+      <h2 id="timeline-title" class="timeline__title">The Salad Timeline</h2>
+
+      <div class="legend" id="legend" aria-label="People who have eaten salads"></div>
+
+      <!-- Horizontal "when did they happen" strip -->
+      <div class="track" id="track" aria-hidden="true"></div>
+      <div class="track-axis" id="track-axis" aria-hidden="true"></div>
+
+      <!-- Detailed chronological list -->
+      <ol class="entries" id="entries"></ol>
+      <p class="empty" id="timeline-empty" hidden>
+        No salads on record. The streak is unbroken — keep it that way. 🥦
+      </p>
+    </section>
+
+    <footer class="board__footer">
+      <p>Stay vigilant. Salads happen when you least expect them.</p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
