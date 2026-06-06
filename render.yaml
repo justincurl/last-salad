@@ -1,0 +1,27 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Deploy: push this repo to GitHub, then on Render choose
+# "New +" -> "Blueprint" and point it at the repo. Render reads this file.
+#
+# NOTE: the free plan has NO persistent disk, so the salad history resets on
+# every redeploy/restart. To keep history, switch `plan` to `starter` (paid)
+# and uncomment the `disk` block below.
+services:
+  - type: web
+    name: last-salad
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Persist the DB on a disk (requires a paid plan + the disk block below).
+      # - key: DB_PATH
+      #   value: /var/data/salads.db
+    # disk:
+    #   name: salad-data
+    #   mountPath: /var/data
+    #   sizeGB: 1

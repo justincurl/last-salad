@@ -68,13 +68,58 @@ in-memory database.
 | ------ | -------------- | --------------------- | ---------------------------------------- |
 | `GET`  | `/api/state`   | —                     | All entries, the last salad time, and the server clock. |
 | `POST` | `/api/salads`  | `{ name, salad }`     | Records a salad and resets the counter.  |
+| `GET`  | `/healthz`     | —                     | Health check for hosting platforms.      |
 
 ## Deploying
 
-This is a standard Node web service. Any host that runs Node and lets you keep
-a writable file for SQLite will work (Render, Railway, Fly.io, a VPS, etc.).
-Set `PORT` if your host requires it, and point `DB_PATH` at a persistent volume
-so the salad history survives restarts.
+This is a standard Node web service that needs a long-running process and a
+writable file for SQLite (so static hosts like GitHub Pages won't work). The
+repo ships ready-to-use config for the two easiest paths.
+
+### Option A — Render (fastest, free)
+
+Best when you just want a public URL in a couple of minutes.
+
+1. Push this repo to GitHub (already done if you're reading this there).
+2. Go to <https://render.com>, sign in with GitHub.
+3. **New +** → **Blueprint** → pick this repo. Render reads
+   [`render.yaml`](./render.yaml) and deploys a free web service.
+4. You'll get a public `https://<name>.onrender.com` URL.
+
+> ⚠️ The **free** plan has no persistent disk, so the salad history resets on
+> each redeploy and after the service spins down when idle. For permanent
+> history, switch the plan to `starter` and uncomment the `disk` block in
+> `render.yaml` (see the comments there), or use Option B.
+
+### Option B — Fly.io (persistent shared board)
+
+Best when you want the salad history to stick around. Uses a Fly volume.
+
+```bash
+# one-time, on your machine:
+brew install flyctl          # or: curl -L https://fly.io/install.sh | sh
+fly auth login
+
+# edit the `app` name in fly.toml to something globally unique, then:
+fly launch --no-deploy --copy-config   # registers the app from fly.toml
+fly volumes create salad_data --size 1 --region iad
+fly deploy
+```
+
+This builds the included [`Dockerfile`](./Dockerfile), mounts a persistent
+volume at `/data`, and gives you a public `https://<app>.fly.dev` URL.
+
+### Option C — any Docker host
+
+The [`Dockerfile`](./Dockerfile) runs anywhere (Railway, Google Cloud Run, a
+VPS, etc.):
+
+```bash
+docker build -t last-salad .
+docker run -p 3000:3000 -v salad_data:/data last-salad
+```
+
+Mount a volume at `/data` (or set `DB_PATH`) so the database persists.
 
 ## License
 

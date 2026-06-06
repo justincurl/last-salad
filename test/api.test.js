@@ -31,6 +31,13 @@ test('starts with an empty tracker', async () => {
   assert.ok(body.serverNow, 'serverNow should be present');
 });
 
+test('exposes a health check', async () => {
+  const res = await fetch(`${base}/healthz`);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.status, 'ok');
+});
+
 test('records a salad and resets the tracker', async () => {
   const res = await fetch(`${base}/api/salads`, {
     method: 'POST',

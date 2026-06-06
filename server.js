@@ -15,6 +15,13 @@ function createApp(db) {
   const app = express();
   app.use(express.json());
 
+  // --- Health check ------------------------------------------------------
+
+  // Lightweight endpoint for hosting platforms' health probes.
+  app.get('/healthz', (req, res) => {
+    res.json({ status: 'ok' });
+  });
+
   // --- API ---------------------------------------------------------------
 
   // Current state of the tracker: every entry plus the server's clock so the
