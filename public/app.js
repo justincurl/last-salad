@@ -312,8 +312,37 @@ el.form.addEventListener('submit', onSubmit);
 
 fetchState().catch((err) => showError(err.message));
 
-// Keep the big number alive, and quietly pick up other people's salads.
-setInterval(tick, SECOND);
-setInterval(() => {
-  fetchState().catch(() => {/* transient network hiccup; try again next time */});
-}, 30 * SECOND);
+// --- Keep it alive, gently -------------------------------------------------
+// The day number ticks locally every second; we also re-sync with the server
+// every 30s to pick up other people's salads. Both pause while the tab is in
+// the background — kinder to laptop batteries and to free tunnel quotas.
+const POLL_INTERVAL = 30 * SECOND;
+let tickTimer = null;
+let pollTimer = null;
+
+function startTimers() {
+  if (tickTimer == null) tickTimer = setInterval(tick, SECOND);
+  if (pollTimer == null) {
+    pollTimer = setInterval(() => {
+      fetchState().catch(() => {/* transient hiccup; try again next time */});
+    }, POLL_INTERVAL);
+  }
+}
+
+function stopTimers() {
+  clearInterval(tickTimer);
+  clearInterval(pollTimer);
+  tickTimer = null;
+  pollTimer = null;
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopTimers();
+  } else {
+    fetchState().catch(() => {/* catch up on return */});
+    startTimers();
+  }
+});
+
+startTimers();

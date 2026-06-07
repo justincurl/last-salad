@@ -70,11 +70,63 @@ in-memory database.
 | `POST` | `/api/salads`  | `{ name, salad }`     | Records a salad and resets the counter.  |
 | `GET`  | `/healthz`     | —                     | Health check for hosting platforms.      |
 
-## Deploying
+## Host it yourself for free (data stays on your laptop)
+
+Want it public, persistent, and **completely free**? Run it on your own
+machine — the SQLite database lives in `data/salads.db` on your disk, so your
+salad history persists across restarts — and expose it with a free tunnel.
+
+> **Trade-off:** the site is only reachable while your laptop is awake and
+> running both the server and the tunnel. Great for an office/friends board;
+> not for 24/7 uptime.
+
+**1. Start the app** (one terminal):
+
+```bash
+npm install && npm start          # serves on http://localhost:3000
+```
+
+**2. Open a free public tunnel** (a second terminal) — pick one:
+
+- **Tailscale Funnel** — *recommended:* a stable URL with no request limits,
+  free for personal use. One-time setup: install Tailscale, sign in, and enable
+  Funnel in the admin console. Then:
+
+  ```bash
+  tailscale funnel 3000
+  # -> https://<your-machine>.<tailnet>.ts.net   (same URL every time)
+  ```
+
+- **Cloudflare Quick Tunnel** — fastest, no account (the URL changes each run):
+
+  ```bash
+  cloudflared tunnel --url http://localhost:3000   # or: npm run tunnel:cloudflare
+  # -> https://<random>.trycloudflare.com
+  ```
+
+- **ngrok** — easy, with a stable free `*.ngrok-free.dev` domain:
+
+  ```bash
+  ngrok http 3000                                  # or: npm run tunnel:ngrok
+  # -> https://<name>.ngrok-free.dev
+  ```
+
+  ngrok's free plan caps you at ~20k requests and 1 GB/month and shows a
+  click-through warning page. Because this board polls every 30s, a tab left
+  open all day can approach that cap — so for a board people keep open, prefer
+  Tailscale or Cloudflare. (The page already pauses polling while its tab is
+  backgrounded to help.)
+
+Want it always-on *without* your laptop and still free? You'd need an
+always-free VM (e.g. Oracle Cloud Always Free) or a free hosted
+SQLite-compatible database (e.g. Turso) behind one of the cloud options below —
+more setup, but no laptop required.
+
+## Deploying to the cloud
 
 This is a standard Node web service that needs a long-running process and a
 writable file for SQLite (so static hosts like GitHub Pages won't work). The
-repo ships ready-to-use config for the two easiest paths.
+repo ships ready-to-use config for the paths below.
 
 ### Option A — Render (fastest, free)
 
